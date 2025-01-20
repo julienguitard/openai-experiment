@@ -1,1 +1,4 @@
 OPENAI_API_KEY = "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"
+
+HUGGING_FACE_0000 = "
+"
