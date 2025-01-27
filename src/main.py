@@ -1,21 +1,14 @@
 import argparse
-from src.chats.iterators import ChatInputIterator
-from src.apis.connectors import APIClient, APIBuffer
-from src.apis.constants import DEEPSEEK_API_KEY
-from src.apis.iterators import MessageIterator
+from chats.iterators import ChatInputIterator
+from apis.connectors import APIClient, APIBuffer
+from apis.constants import DEEPSEEK_API_KEY
+from apis.iterators import MessageIterator
 
 token = {"api_key":DEEPSEEK_API_KEY, "base_url":"https://api.deepseek.com"}
 
 role_config = {
     "role": 'data engineer',
     "speciality":'domain modelling with Postregsql'
-}
-
-content_config = {
-    "output":'Postgresql database schema',
-    "theme":"{theme}",
-    "extra_context":"Do not hesitate to create enum type or small tables to avoid unguarded VARCHAR types and populate your tables",
-    "negative_guideline":" Do not give examples of queries"
 }
 
 if __name__ == "__main__":

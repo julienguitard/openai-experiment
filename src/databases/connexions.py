@@ -6,15 +6,15 @@ from typing import Tuple
 import psycopg2
 from getpass import getpass
 
-from src.common.types import Query
-from src.common.types import Queries
-from src.common.types import PipelinedQueries
-from src.common.types import QueryResults
-from src.common.types import PipelinedResults
-from src.common.collections import lmap
-from src.common.collections import dmap
-from src.common.decorators import logger_decorator
-from src.database.sql.renderers import renderers
+from common.types import Query
+from common.types import Queries
+from common.types import PipelinedQueries
+from common.types import QueryResults
+from common.types import PipelinedResults
+from common.collections import lmap
+from common.collections import dmap
+from common.decorators import logger_decorator
+from database.sql.renderers import renderers
 
 
 class DBClient:

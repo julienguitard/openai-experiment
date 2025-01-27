@@ -1,4 +1,4 @@
-from src.chats.iterators import ChatInputIterator
+from chats.iterators import ChatInputIterator
 from typing import Callable
 
 class MessageIterator:
