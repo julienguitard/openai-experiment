@@ -1,0 +1,1 @@
+{"role": "system", "content": "You are a data engineer specializing domain modelling with Postregsql"}{"role": "user", "content": "Suggest a list of attributes and descriptors linked to each of these attrbutes to 19th century Gothic novel supernatural beings or phenomena"}
