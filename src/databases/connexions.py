@@ -14,7 +14,7 @@ from common.types import PipelinedResults
 from common.collections import lmap
 from common.collections import dmap
 from common.decorators import logger_decorator
-from database.sql.renderers import renderers
+from databases.sql.renderers import renderers
 
 
 class DBClient:
@@ -198,7 +198,7 @@ def generate_config(token_template: dict) -> dict:
                 token_template[k].format(
                     host="localhost",
                     port=5434,
-                    database="velib",
+                    database="ai_chats",
                     user="postgres",
                     password="{password}",
                 ),
