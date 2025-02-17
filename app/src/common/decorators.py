@@ -82,6 +82,20 @@ def repeat_decorator(
     return inner
 
 
+
+def retry(func,retries=20,sleep=60):
+    def gunc(*args,**kwargs):
+        retries_ = retries
+        while retries_>0:
+            try:
+                return func(*args,**kwargs)
+            except Exception as e:
+                retries_ = retries_ - 1
+                print('retries in {sleep} second'.format(sleep=sleep))
+                time.sleep(sleep)
+        raise(Exception('Api was unreachable'))
+    return gunc
+
 def logger_decorator(
     func: Callable[[T0], T1], now=time.time
 ) -> Callable[[T0], T1]:
@@ -285,3 +299,4 @@ def nested_decorator_(func):
         return res
 
     return gunc
+
