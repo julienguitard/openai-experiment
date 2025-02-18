@@ -1,5 +1,6 @@
 import argparse, sys, time, json
-from common.iterators import retry
+from common.decorators import retry
+from common.constants import PERSISTENT_DATA_PATH
 from chats.iterators import ChatInputIterator
 from apis.connectors import APIClient, APIBuffer
 from apis.constants import DEEPSEEK_API_KEY
@@ -26,7 +27,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run a query on the database")
     _ = parser.add_argument("query", type=str)
     fname = str(int(1000*time.time()))
-    with open('../.data/'+fname+'.txt','w') as f:
+    with open(PERSISTENT_DATA_PATH+fname+'.txt','w') as f:
         with APIClient(token) as client:
             with APIBuffer(client) as buffer:
                 chat_history = [{"role": "system", "content": "You are a {role} specializing {speciality}".format(**role_config)}]

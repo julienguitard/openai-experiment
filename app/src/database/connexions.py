@@ -3,7 +3,7 @@ from typing import Optional
 from typing import Callable
 from typing import List
 from typing import Tuple
-import psycopg2
+import psycopg
 from getpass import getpass
 
 from common.types import Query
@@ -14,7 +14,9 @@ from common.types import PipelinedResults
 from common.collections import lmap
 from common.collections import dmap
 from common.decorators import logger_decorator
-from databases.sql.renderers import renderers
+from database.constants import HOST, PORT, DATABASE, USER
+from database.sql.renderers import renderers
+
 
 
 class DBClient:
@@ -26,7 +28,7 @@ class DBClient:
             token (dict):The token to be assigned to the class.
         """
         self.token = token
-        self.connexion_ = psycopg2.connect(**self.token)
+        self.connexion_ = psycopg.connect(**self.token)
 
     def connexion(self) -> None:
         """
@@ -36,7 +38,7 @@ class DBClient:
         """
         if self.connexion_.closed == 1:
             print("restart connexion")
-            self.connexion_ = psycopg2.connect(**self.token)
+            self.connexion_ = psycopg.connect(**self.token)
         return self.connexion_
 
     def __enter__(self) -> Any:
@@ -196,10 +198,10 @@ def generate_config(token_template: dict) -> dict:
             (
                 k,
                 token_template[k].format(
-                    host="localhost",
-                    port=5434,
-                    database="ai_chats",
-                    user="postgres",
+                    host=LOCALHOST,
+                    port=PORT,
+                    database=DATABASE,
+                    user=USER,
                     password="{password}",
                 ),
             )

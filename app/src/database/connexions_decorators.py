@@ -6,11 +6,11 @@ from typing import Dict
 from typing import Tuple
 from typing import Any
 from typing import TypeVar
-from databases.constants import TOKEN_TEMPLATE
-from databases.connexions import DBClient
-from databases.connexions import Buffer
-from databases.connexions import generate_config
-from databases.connexions import generate_token
+from database.constants import TOKEN_TEMPLATE
+from database.connexions import DBClient
+from database.connexions import Buffer
+from database.connexions import generate_config
+from database.connexions import generate_token
 
 
 def buffer_decorator(func: Callable[[Buffer], None]) -> Callable[[], None]:
