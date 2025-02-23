@@ -14,7 +14,7 @@ from common.types import PipelinedResults
 from common.collections import lmap
 from common.collections import dmap
 from common.decorators import logger_decorator
-from database.constants import HOST, PORT, DATABASE, USER
+from database.constants import HOST, PORT, DBNAME, USER
 from database.sql.renderers import renderers
 
 
@@ -198,9 +198,9 @@ def generate_config(token_template: dict) -> dict:
             (
                 k,
                 token_template[k].format(
-                    host=LOCALHOST,
+                    host=HOST,
                     port=PORT,
-                    database=DATABASE,
+                    dbname=DBNAME,
                     user=USER,
                     password="{password}",
                 ),
@@ -215,6 +215,6 @@ def generate_token(config: dict, token_template: dict) -> dict:
     Generate a token for the database.
     """
     config["password"] = getpass(
-        "Enter password for {database}".format(**config)
+        "Enter password for {dbname}".format(**config)
     )
     return dmap(lambda k, v: (k, v.format(**config)), token_template)

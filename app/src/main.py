@@ -5,6 +5,8 @@ from chats.iterators import ChatInputIterator
 from apis.connectors import APIClient, APIBuffer
 from apis.constants import DEEPSEEK_API_KEY
 from apis.iterators import MessageIterator
+from database.connexions import generate_token, generate_config, DBClient, Buffer
+from database.constants import TOKEN_TEMPLATE
 
 sys.path.insert(0,'./')
 
@@ -13,7 +15,7 @@ token = {"api_key":DEEPSEEK_API_KEY, "base_url":"https://api.deepseek.com"}
 role_config = {
 
     "role": 'data engineer',
-    "speciality":'domain modelling with Postregsql'
+    "speciality":'domain modeling with Postregsql'
 }
 
 content_config = {
@@ -26,13 +28,30 @@ content_config = {
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run a query on the database")
     _ = parser.add_argument("query", type=str)
-    fname = str(int(1000*time.time()))
-    with open(PERSISTENT_DATA_PATH+fname+'.txt','w') as f:
-        with APIClient(token) as client:
-            with APIBuffer(client) as buffer:
-                chat_history = [{"role": "system", "content": "You are a {role} specializing {speciality}".format(**role_config)}]
-                f.writelines(list(map(json.dumps,chat_history)))
-                bf = retry(buffer.query)
-                for ch in iter(MessageIterator(chat_history,bf)):
-                    print(ch[-1]["content"])
-                    f.writelines(list(map(json.dumps,chat_history)))
+    epoch = int(time.time())
+    database_config = generate_config(TOKEN_TEMPLATE)
+    database_token = generate_token(database_config, TOKEN_TEMPLATE)
+    with DBClient(database_token) as database_client:
+        with Buffer(database_client) as database_buffer:
+            with APIClient(token) as client:
+                with APIBuffer(client) as buffer:
+                    system_role = "You are a {role} specializing {speciality}".format(**role_config)
+                    insertable_chat_args = {"epoch":epoch,"system_role":system_role.encode("utf-8").hex()}
+                    chat_history = [{"role": "system", 
+                                     "content": system_role}]
+                    bf = retry(buffer.query)
+                    for ch in iter(MessageIterator(chat_history,bf)):
+                        print(ch[-1]["content"])
+
+            chat_insert_sql = '''INSERT INTO chats SELECT * FROM generate_insertable_chat({epoch},'\\x{system_role}')'''.format(**insertable_chat_args)
+            database_buffer.query(chat_insert_sql)
+            for i in range(0,(len(chat_history)-1)//2):
+                insertable_chat_args = {"epoch":epoch,
+                                        "rank_":i,
+                                        "prompt":(chat_history[2 * i + 1]["content"]).encode("utf-8").hex(),
+                                        "response":(chat_history[2 * i + 2]["content"]).encode("utf-8").hex(),
+                                        "retries":0}
+                qa_insert_sql = '''INSERT INTO qas SELECT * FROM generate_insertable_qa({epoch},{rank_},'\\x{prompt}','\\x{response}',{retries})'''.format(**insertable_chat_args)
+                database_buffer.query(qa_insert_sql)
+
+                
