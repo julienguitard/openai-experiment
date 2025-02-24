@@ -1,6 +1,7 @@
 import argparse, sys, time, json
 from common.decorators import retry
 from common.constants import PERSISTENT_DATA_PATH
+from common.strings import get_hex
 from chats.iterators import ChatInputIterator
 from apis.connectors import APIClient, APIBuffer
 from apis.constants import DEEPSEEK_API_KEY
@@ -36,7 +37,7 @@ if __name__ == "__main__":
             with APIClient(token) as client:
                 with APIBuffer(client) as buffer:
                     system_role = "You are a {role} specializing {speciality}".format(**role_config)
-                    insertable_chat_args = {"epoch":epoch,"system_role":system_role.encode("utf-8").hex()}
+                    insertable_chat_args = {"epoch":epoch,"system_role":get_hex(system_role)}
                     chat_history = [{"role": "system", 
                                      "content": system_role}]
                     bf = retry(buffer.query)
@@ -48,8 +49,8 @@ if __name__ == "__main__":
             for i in range(0,(len(chat_history)-1)//2):
                 insertable_chat_args = {"epoch":epoch,
                                         "rank_":i,
-                                        "prompt":(chat_history[2 * i + 1]["content"]).encode("utf-8").hex(),
-                                        "response":(chat_history[2 * i + 2]["content"]).encode("utf-8").hex(),
+                                        "prompt":get_hex(chat_history[2 * i + 1]["content"]),
+                                        "response":get_hex(chat_history[2 * i + 2]["content"]),
                                         "retries":0}
                 qa_insert_sql = '''INSERT INTO qas SELECT * FROM generate_insertable_qa({epoch},{rank_},'\\x{prompt}','\\x{response}',{retries})'''.format(**insertable_chat_args)
                 database_buffer.query(qa_insert_sql)

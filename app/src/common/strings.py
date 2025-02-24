@@ -66,3 +66,7 @@ def format_partially(s: str, mapping: Dict[str, str]) -> str:
         if k in mapping.keys():
             kwargs[k] = mapping[k]
     return s.format(*args, **kwargs)
+
+
+def get_hex(s:str)->str:
+    return s.encode("utf-8").hex()
